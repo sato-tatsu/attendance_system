@@ -17,8 +17,9 @@
         <h2>従業員 一覧</h2>
         <form id="regulartime_form" method="post" action="<c:url value='/employees/regulartime/update' />">
             <input type="hidden" name="_token" value="${_token}" />
-            <button id="regist"type="submit" disabled>登録</button>
+            <button id="regist"type="submit" disabled>定時登録</button>
         </form>
+        <br><br>
         <table id="employee_list">
             <tbody>
                 <tr>

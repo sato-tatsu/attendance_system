@@ -14,7 +14,14 @@
                 <c:otherwise>
                     <form id="attendance_form" method="post" action="<c:url value='/attendance/update'/>">
                         <c:import url="_form.jsp" />
-                    </form>
+                    </form>&nbsp;&nbsp;
+                    <c:if test="${calendar.select_attendance.approve == 1 || calendar.select_attendance.approve == 5}">
+                        <form id="destroy_form" method="post" action="<c:url value='/attendance/destroy'/>">
+                            <input type="hidden" name="_token" value="${_token}"/>
+                            <input type="hidden" name="attendance_id" value="${calendar.select_attendance.id}"/>
+                            <button type="submit">勤怠削除</button>
+                        </form>
+                    </c:if>
                 </c:otherwise>
             </c:choose>
         </div>

@@ -433,3 +433,7 @@ div.news ul
     padding : 10px;
     padding-left : 25px;
 }
+button#regist
+{
+    float:right;
+}

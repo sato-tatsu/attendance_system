@@ -30,7 +30,7 @@
 <br /><br />
 
 <label for="paid">有給日数</label><br />
-<input type="number" name="paid" value="${employee.paid}" />
+<input type="number" name="paid" value="${employee.paid}" required/>
 <br /><br />
 
 <input type="hidden" name="_token" value="${_token}" />

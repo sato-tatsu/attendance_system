@@ -63,7 +63,6 @@ public class Employee {
     @Column(name = "regular_finish")
     private Time regular_finish;
 
-
     @Column(name = "created_at", nullable = false)
     private Timestamp created_at;
 
@@ -72,6 +71,9 @@ public class Employee {
 
     @Column(name = "delete_flag", nullable = false)
     private Integer delete_flag;
+
+    @Column(name = "regular_type")
+    private Integer regular_type;
 
     public Integer getId()
     {
@@ -173,5 +175,13 @@ public class Employee {
     public void setDelete_flag(Integer delete_flag)
     {
         this.delete_flag = delete_flag;
+    }
+
+    public Integer getRegular_type() {
+        return regular_type;
+    }
+
+    public void setRegular_type(Integer regular_type) {
+        this.regular_type = regular_type;
     }
 }

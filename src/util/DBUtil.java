@@ -6,7 +6,7 @@ import javax.persistence.Persistence;
 
 public class DBUtil {
 
-    private static final String PERSISTENCE_UNIT_NAME = "GroupWare";
+    private static final String PERSISTENCE_UNIT_NAME = "attendance_system";
     private static EntityManagerFactory emf;
 
     public static EntityManager createEntityManager()

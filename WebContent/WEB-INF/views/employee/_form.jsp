@@ -33,13 +33,5 @@
 <input type="number" name="paid" value="${employee.paid}" />
 <br /><br />
 
-<label for="start_time">出社時間</label><br>
-<input name="start_time" type="time" value="${employee.regular_start}" required/>
-<br><br>
-
-<label for="finish_time">退社時間</label><br>
-<input name="finish_time" type="time" value="${employee.regular_finish}" required/>
-<br><br>
-
 <input type="hidden" name="_token" value="${_token}" />
 <button type="submit">登録</button>

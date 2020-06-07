@@ -51,13 +51,12 @@ public class EmployeesCreateServlet extends HttpServlet {
             e.setAdmin_flag(Integer.parseInt(request.getParameter("admin_flag")));
 
             e.setPaid(Double.parseDouble(request.getParameter("paid")));
-            // フォーム入力では秒単位がなくsetでこけてしまうため、秒まで付与する処理
-            // 最初に5文字抜き出しているのは、input初期値のままsubmitされた値は秒まで
-            // あるため、処理を統一化するため。
-            String start_time = request.getParameter("start_time").substring(0, 5) + ":00";
-            String finish_time = request.getParameter("finish_time").substring(0, 5) + ":00";
+            // 登録時の定時はデフォルトで定時1(8時開始)を設定する
+            String start_time = "8:00:00";
+            String finish_time = "17:00:00";
             e.setRegular_start(Time.valueOf(start_time));
             e.setRegular_finish(Time.valueOf(finish_time));
+            e.setRegular_type(1);
 
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             e.setCreated_at(currentTime);

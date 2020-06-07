@@ -1,0 +1,109 @@
+-- 1. データベースを作成
+CREATE DATABASE attendance_system default character set utf8;
+
+-- 2. アカウント、パスワード作成
+CREATE USER 'repuser'@'localhost' IDENTIFIED BY 'reppass';
+
+-- 3. データベースへの権限付与
+GRANT ALL PRIVILEGES ON attendance_system.* to 'repuser'@'localhost';
+
+-- 4. admin テーブルを作成
+CREATE TABLE attendance_system.admin
+(
+	id                          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    admin_str                   VARCHAR(255) NOT NULL,
+    strong                      INT NOT NULL
+);
+
+-- 5. approve テーブル作成
+CREATE TABLE attendance_system.approve
+(
+    id                          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    admin_action                VARCHAR(255),
+    admin_next_state            INT,
+    normal_action               VARCHAR(255),
+    normal_next_state           INT,
+    state                       VARCHAR(255)
+);
+
+-- 6. attendance テーブル作成
+CREATE TABLE attendance_system.attendance
+(
+    id                          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    approve                     INT ,
+    absence                     DOUBLE(4,2),
+    overtime                    DOUBLE(4,2),
+    regulation_time             DOUBLE(4,2),
+    date                        DATE,
+    begin_time                  TIME(0),
+    finish_time                 TIME(0),
+    type                        INT,
+    created_at                  DATETIME,
+    updated_at                  DATETIME,
+    employee_id                 INT
+);
+
+-- 7. attendancetype テーブル作成
+CREATE TABLE attendance_system.attendancetype
+(
+    id                          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    type                        INT NOT NULL,
+    type_str                    VARCHAR(255) NOT NULL
+);
+
+-- 8. employee テーブル作成
+CREATE TABLE attendance_system.employees
+(
+    id                          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    code                        VARCHAR(255) NOT NULL,
+    admin_flag                  INT NOT NULL,
+    created_at                  DATETIME NOT NULL,
+    delete_flag                 INT NOT NULL,
+    name                        VARCHAR(255) NOT NULL,
+    password                    VARCHAR(64) NOT NULL,
+    updated_at                  DATETIME NOT NULL,
+    paid                        DOUBLE(4,2) NOT NULL,
+    regular_start               TIME(0) NOT NULL,
+    regular_finish              TIME(0) NOT NULL,
+    regular_type                INT NOT NULL,
+    CONSTRAINT UK_3um79qgwg340lpaw7phtwudtd UNIQUE (code)
+);
+
+-- 9. regulartime テーブル作成
+CREATE TABLE attendance_system.regulartime
+(
+    id                          INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    type                        VARCHAR(255) NOT NULL,
+    regular_start               TIME(0) NOT NULL,
+    regular_finish              TIME(0) NOT NULL,
+    break_start                 TIME(0) NOT NULL,
+    break_finish                TIME(0) NOT NULL
+);
+
+-- 10. admin テーブルに要素追加
+INSERT INTO attendance_system.admin (admin_str, strong) VALUES ("一般", 0);
+INSERT INTO attendance_system.admin(admin_str, strong) VALUES ("係長", 1);
+INSERT INTO attendance_system.admin (admin_str, strong) VALUES ("部長", 2);
+
+-- 11. approve テーブルに要素追加
+INSERT INTO attendance_system.approve(admin_action, admin_next_state, normal_action, normal_next_state, state) VALUES (NULL, NULL, "申請", 2, "未申請");
+INSERT INTO attendance_system.approve (admin_action, admin_next_state, normal_action, normal_next_state, state) VALUES ("承認", 3, "引戻", 1, "承認待ち");
+INSERT INTO attendance_system.approve (admin_action, admin_next_state, normal_action, normal_next_state, state) VALUES (NULL, NULL, "引戻申", 4, "承認済み");
+INSERT INTO attendance_system.approve (admin_action, admin_next_state, normal_action, normal_next_state, state) VALUES ("引戻", 5, NULL, NULL, "引戻待ち");
+INSERT INTO attendance_system.approve (admin_action, admin_next_state, normal_action, normal_next_state, state) VALUES (NULL, NULL, "申請", 2, "引戻済み");
+
+-- 12. attendancetype テーブルに要素追加
+INSERT INTO attendance_system.attendancetype (type, type_str) VALUES (0, "普通");
+INSERT INTO attendance_system.attendancetype (type, type_str) VALUES (1, "AM休");
+INSERT INTO attendance_system.attendancetype (type, type_str) VALUES (2, "PM休");
+INSERT INTO attendance_system.attendancetype (type, type_str) VALUES (3, "全休");
+INSERT INTO attendance_system.attendancetype (type, type_str) VALUES (4, "休日出勤");
+INSERT INTO attendance_system.attendancetype (type, type_str) VALUES (5, "欠勤");
+
+-- 13. emmployee テーブルに要素追加
+INSERT INTO attendance_system.employees (code, admin_flag, created_at, delete_flag, name, password, updated_at, paid, regular_start, regular_finish, regular_type) VALUES ("suser", 2, "2020-06-01 00:00:00", 0, "suser", "suser", "2020-06-01 00:00:00", 20, "09:00:00", "18:00:00", 0);
+
+-- 14. regulartime テーブルに要素追加
+INSERT INTO attendance_system.regulartime (type, regular_start, regular_finish, break_start, break_finish) VALUES ("定時1(8時開始)", "08:00:00", "17:00:00", "11:00:00", "12:00:00");
+INSERT INTO attendance_system.regulartime (type, regular_start, regular_finish, break_start, break_finish) VALUES ("定時2(9時開始)", "09:00:00", "18:00:00", "12:00:00", "13:00:00");
+INSERT INTO attendance_system.regulartime (type, regular_start, regular_finish, break_start, break_finish) VALUES ("定時3(10時開始)", "10:00:00", "19:00:00", "13:00:00", "14:00:00");

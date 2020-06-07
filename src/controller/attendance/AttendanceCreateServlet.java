@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import model.Attendance;
 import model.Employee;
+import model.RegularTime;
 import model.analysis.AttendanceAnalysis;
 import model.validators.AttendanceValidator;
 import util.DBUtil;
@@ -70,8 +71,9 @@ public class AttendanceCreateServlet extends HttpServlet {
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
             at.setCreated_at(currentTime);
             at.setUpdated_at(currentTime);
+            RegularTime rt = em.find(RegularTime.class, login_employee.getRegular_type());
             // 勤怠時間の計算
-            check_validate_time_flag = AttendanceAnalysis.calucAttendance_time(at);
+            check_validate_time_flag = AttendanceAnalysis.calucAttendance_time(at, rt);
 
             // バリデーションチェック
             List<String> errors = AttendanceValidator.validator(at.getBegin_time(), at.getFinish_time(), at.getEmployee().getPaid(), check_validate_time_flag);

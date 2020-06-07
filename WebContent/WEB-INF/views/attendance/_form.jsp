@@ -50,7 +50,63 @@
 
 
 <script>
+    // 種別変更時
     function changeLimitTime()
+    {
+        var select = document.getElementById('type');
+        var type = select.value;
+        var begin_time = document.getElementById("begin_time");
+        var finish_time = document.getElementById("finish_time");
+
+        select.removeAttribute("readonly");
+        begin_time.removeAttribute("readonly");
+        finish_time.removeAttribute("readonly");
+
+        switch(type)
+        {
+            case '1':// AM休
+                begin_time.value = "${break_finish}";
+                finish_time.value = "${login_employee.regular_finish}";
+                begin_time.setAttribute("min", "${break_start}");
+                finish_time.removeAttribute("max");
+                break;
+            case '2':// PM休
+                begin_time.value = "${login_employee.regular_start}";
+                finish_time.value = "${break_start}";
+                finish_time.setAttribute("max", "${break_finish}");
+                begin_time.removeAttribute("min");
+                break;
+            case '3':// 有給休暇
+            case '5':// 欠勤
+                begin_time.value = "00:00";
+                finish_time.value = "00:00";
+                begin_time.setAttribute("readonly", null);
+                finish_time.setAttribute("readonly", null);
+                break;
+            default:
+                begin_time.value = "${login_employee.regular_start}";
+                finish_time.value = "${login_employee.regular_finish}";
+                begin_time.removeAttribute("min");
+                finish_time.removeAttribute("max");
+                break;
+        }
+
+        if ( "${calendar.select_attendance.approve}" != 1 && "${calendar.select_attendance.approve}" != 5 && "${calendar.select_attendance.approve}" != "")
+        {
+            for (var i = 0; i < 6; i++)
+            {
+                if(i != type)
+                {
+                    select.options[i].disabled = true;
+                }
+            }
+            begin_time.setAttribute("readonly", null);
+            finish_time.setAttribute("readonly", null);
+        }
+
+    }
+    // ページ読み込み時
+    function showAttendanceTime()
     {
         var select = document.getElementById('type');
         var type = select.value;
@@ -72,38 +128,27 @@
             finish = "${calendar.select_attendance.finish_time}";
         }
 
+        begin_time.value = begin;
+        finish_time.value = finish;
+
         switch(type)
         {
             case '1':// AM休
-                begin_time.value = "13:00";
-                finish_time.value = finish;
-                begin_time.setAttribute("min", "13:00");
+                begin_time.setAttribute("min", "${break_finish}");
                 finish_time.removeAttribute("max");
-                //begin_time.removeAttribute("readonly");
-                //finish_time.removeAttribute("readonly");
                 break;
             case '2':// PM休
-                begin_time.value = begin;
-                finish_time.value = "12:00";
-                finish_time.setAttribute("max", "12:00");
+                finish_time.setAttribute("max", "${break_start}");
                 begin_time.removeAttribute("min");
-                //begin_time.removeAttribute("readonly");
-                //finish_time.removeAttribute("readonly");
                 break;
             case '3':// 有給休暇
             case '5':// 欠勤
-                begin_time.value = "00:00";
-                finish_time.value = "00:00";
                 begin_time.setAttribute("readonly", null);
                 finish_time.setAttribute("readonly", null);
                 break;
             default:
-                begin_time.value = begin;
-                finish_time.value = finish;
                 begin_time.removeAttribute("min");
                 finish_time.removeAttribute("max");
-                //begin_time.removeAttribute("readonly");
-                //finish_time.removeAttribute("readonly");
                 break;
         }
 
@@ -119,9 +164,6 @@
             begin_time.setAttribute("readonly", null);
             finish_time.setAttribute("readonly", null);
         }
-
     }
-    // ページ生成時用にここでも呼んでおく
-    changeLimitTime();
-
+    showAttendanceTime();
 </script>

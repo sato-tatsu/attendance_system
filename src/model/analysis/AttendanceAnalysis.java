@@ -9,41 +9,50 @@ import javax.persistence.EntityManager;
 
 import model.Attendance;
 import model.Employee;
+import model.RegularTime;
 import util.DBUtil;
 
 public class AttendanceAnalysis {
 
-    public static Boolean calucAttendance_time(Attendance attendance)
+    public static Boolean calucAttendance_time(Attendance attendance, RegularTime regulartime)
     {
         final Double BASE_WORK_TIME = 8.0;
-        final Double START_WORK_PM = 13.0;
-        final Double END_WORK_AM = 12.0;
 
         Boolean check_validate_time_flag = true;
 
+        Double regulation_time = 0.0;             // 所定内勤務時間
         Double overtime = 0.0;                     // 所定外勤務時間
         Double absence = 0.0;                      // 欠勤時間
         Double break_time = 0.0;                   // 休憩時間
 
-        // 定時時間と勤務時間と休憩時間を文字列として取得
+        // 定時時間と勤務時間を文字列として取得
         String r_s_time_str = attendance.getEmployee().getRegular_start().toString();
         String r_f_time_str = attendance.getEmployee().getRegular_finish().toString();
         String s_time_str = attendance.getBegin_time().toString();
         String f_time_str = attendance.getFinish_time().toString();
+        String b_s_time_str = regulartime.getBreak_start().toString();
+        String b_f_time_str = regulartime.getBreak_finish().toString();
 
         // 各要素を分単位に変換
         // 開始定時
         String[] temp_str = r_s_time_str.split(":");
-        Double r_s_time = Double.parseDouble(temp_str[0]) * 60 + Integer.parseInt(temp_str[1]);
+        Double r_s_time = Double.parseDouble(temp_str[0]) * 60 + Double.parseDouble(temp_str[1]);
         // 終了定時
         temp_str = r_f_time_str.split(":");
-        Double r_f_time = Double.parseDouble(temp_str[0]) * 60 + Integer.parseInt(temp_str[1]);
+        Double r_f_time = Double.parseDouble(temp_str[0]) * 60 + Double.parseDouble(temp_str[1]);
         // 開始勤務時間
         temp_str = s_time_str.split(":");
-        Double s_time = Double.parseDouble(temp_str[0]) * 60 + Integer.parseInt(temp_str[1]);
+        Double s_time = Double.parseDouble(temp_str[0]) * 60 + Double.parseDouble(temp_str[1]);
         // 終了勤務時間
         temp_str = f_time_str.split(":");
-        Double f_time = Double.parseDouble(temp_str[0]) * 60 + Integer.parseInt(temp_str[1]);
+        Double f_time = Double.parseDouble(temp_str[0]) * 60 + Double.parseDouble(temp_str[1]);
+        // 休憩開始時間
+        temp_str = b_s_time_str.split(":");
+        Double b_s_time = Double.parseDouble(temp_str[0]) * 60 + Double.parseDouble(temp_str[1]);
+        // 休憩終了時間
+        temp_str = b_f_time_str.split(":");
+        Double b_f_time = Double.parseDouble(temp_str[0]) * 60 + Double.parseDouble(temp_str[1]);
+
 
         // 1日の総時間を算出
         Double total_time = f_time - s_time;
@@ -68,27 +77,36 @@ public class AttendanceAnalysis {
                 break;
 
             case 1 :    // AM休
-                // 定時開始時間を13時に設定
-                r_s_time = START_WORK_PM * 60;
+                // 定時開始時間を休憩終了時間に設定
+                r_s_time = b_f_time;
                 break;
 
             case 2 :    // PM休
-                // 定時終了時間を12時に設定
-                r_f_time = END_WORK_AM * 60;
+                // 定時終了時間を休憩開始時間に設定
+                r_f_time = b_s_time;
                 break;
 
             case 3 :    // 有給
-                // 特に処理なし
+                // すべて0.0を設定
+                attendance.setRegulation_time(convMinutsToHour(regulation_time));
+                attendance.setOvertime(convMinutsToHour(overtime));
+                attendance.setAbsence(convMinutsToHour(absence));
                 return false;
 
             case 4 :    // 休日出勤
                 // 総勤務時間が所定外勤務時間となる
+                // その他は0.0を設定
                 attendance.setOvertime(convMinutsToHour(total_time));
+                attendance.setRegulation_time(convMinutsToHour(regulation_time));
+                attendance.setAbsence(convMinutsToHour(absence));
                 return check_validate_time_flag;
 
             case 5 :    // 欠勤
                 // 基本労働時間が欠勤時間となる
+                // その他は0.0を設定
                 attendance.setAbsence(BASE_WORK_TIME);
+                attendance.setRegulation_time(convMinutsToHour(regulation_time));
+                attendance.setOvertime(convMinutsToHour(overtime));
                 return false;
             default:
                 break;
@@ -121,7 +139,7 @@ public class AttendanceAnalysis {
         attendance.setAbsence(convMinutsToHour(absence));
 
         // 所定内時間の取得とセット
-        Double regulation_time = total_time - overtime;
+        regulation_time = total_time - overtime;
         attendance.setRegulation_time(convMinutsToHour(regulation_time));
 
         return check_validate_time_flag;

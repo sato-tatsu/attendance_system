@@ -12,7 +12,7 @@
         <div id="wrapper" >
             <div id="header">
                 <div id="header_title">
-                    <h1><a href="<c:url value='/'/>">E.A.System</a></h1>
+                    <h1><a href="<c:url value='/'/>">A.M.System</a></h1>
                 </div>
                 <c:if test="${sessionScope.login_employee != null}">
                     <div id="employee_name">
@@ -21,12 +21,12 @@
                     </div>
                     <div id="header_menu">
                         <a id="/" href="<c:url value='/' />">マイページ</a>&nbsp;&nbsp;
-                        <a id=attendance href="<c:url value='/attendance/index'/>">勤怠入力</a>&nbsp;&nbsp;
+                        <a id="/attendance/" href="<c:url value='/attendance/index'/>">勤怠入力</a>&nbsp;&nbsp;
                         <c:if test="${sessionScope.login_employee.admin_flag > 0}">
-                            <a id=approve href="<c:url value='/attendance/approve/index'/>">勤怠承認</a>&nbsp;&nbsp;
+                            <a id="/attendance/approve" href="<c:url value='/attendance/approve/index'/>">勤怠承認</a>&nbsp;&nbsp;
                         </c:if>
                         <c:if test="${sessionScope.login_employee.admin_flag > 1}">
-                            <a id=employees href="<c:url value='/employees/index'/>">従業員登録</a>&nbsp;&nbsp;
+                            <a id=/employees href="<c:url value='/employees/index'/>">従業員登録</a>&nbsp;&nbsp;
                         </c:if>
                     </div>
                     <script>

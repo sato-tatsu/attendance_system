@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import model.Employee;
+import model.RegularTime;
 import util.DBUtil;
 
 /**
@@ -35,6 +36,8 @@ public class EmployeesIndexServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em = DBUtil.createEntityManager();
 
+        String _token = request.getSession().getId();
+
         int page = 1;
         try
         {
@@ -44,12 +47,15 @@ public class EmployeesIndexServlet extends HttpServlet {
         {
         }
         List<Employee> employees = em.createNamedQuery("getAllEmployees", Employee.class).setFirstResult(15 * (page - 1)).setMaxResults(15).getResultList();
+        List<RegularTime> regular_time = em.createNamedQuery("getAllRegularTime", RegularTime.class).getResultList();
 
         long employees_count = (long)em.createNamedQuery("getEmployeesCount", Long.class).getSingleResult();
 
         em.close();
 
+        request.setAttribute("_token", _token);
         request.setAttribute("employees", employees);
+        request.setAttribute("regular_time", regular_time);
         request.setAttribute("employees_count", employees_count);
         request.setAttribute("page", page);
         if (request.getSession().getAttribute("flush") != null)

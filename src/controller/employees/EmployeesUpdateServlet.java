@@ -1,7 +1,6 @@
 package controller.employees;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,13 +94,6 @@ public class EmployeesUpdateServlet extends HttpServlet {
                 e.setName(request.getParameter("name"));
                 e.setAdmin_flag(Integer.parseInt(request.getParameter("admin_flag")));
                 e.setPaid(Double.parseDouble(request.getParameter("paid")));
-                // フォーム入力では秒単位がなくsetでこけてしまうため、秒まで付与する処理
-                // 最初に5文字抜き出しているのは、input初期値のままsubmitされた値は秒まで
-                // あるため、処理を統一化するため。
-                String start_time = request.getParameter("start_time").substring(0, 5) + ":00";
-                String finish_time = request.getParameter("finish_time").substring(0, 5) + ":00";
-                e.setRegular_start(Time.valueOf(start_time));
-                e.setRegular_finish(Time.valueOf(finish_time));
                 e.setUpdated_at(new Timestamp(System.currentTimeMillis()));
                 e.setDelete_flag(0);
 

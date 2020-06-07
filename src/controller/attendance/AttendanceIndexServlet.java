@@ -2,6 +2,7 @@ package controller.attendance;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.Time;
 import java.util.Calendar;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import model.Approve;
 import model.Attendance;
 import model.AttendanceType;
 import model.Employee;
+import model.RegularTime;
 import model.analysis.AttendanceAnalysis;
 import model.struct.CalendarStruct;
 import util.DBUtil;
@@ -99,6 +101,12 @@ public class AttendanceIndexServlet extends HttpServlet {
 
         // 承認ステータス情報をすべて取得する
         List<Approve> approve = em.createNamedQuery("getAllApprove", Approve.class).getResultList();
+
+        // お昼休みのデータを取得
+        RegularTime rt = em.find(RegularTime.class, login_employee.getRegular_type());
+        Time break_start = rt.getBreak_start();
+        Time break_finish = rt.getBreak_finish();
+
         em.close();
 
         // カレンダーデータを作成
@@ -112,6 +120,8 @@ public class AttendanceIndexServlet extends HttpServlet {
         request.setAttribute("absence", absence);
         request.setAttribute("paid", paid);
         request.setAttribute("rema_paid", rema_paid);
+        request.setAttribute("break_start", break_start);
+        request.setAttribute("break_finish", break_finish);
 
         // フラッシュメッセージの取得
         if (request.getSession().getAttribute("flush") != null)
